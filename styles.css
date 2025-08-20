@@ -1,0 +1,282 @@
+/* --- VARIABLES CSS PARA CATEGORÍAS --- */
+:root {
+  --typo-color: #ef4444;
+  --gramatica-color: #6366f1;
+  --estilo-color: #f59e0b;
+  --otro-color: #6b7280;
+  --highlight-opacity: 0.15;
+  --underline-thickness: 2px;
+  --hover-scale: 1.02;
+}
+
+/* --- ESTILO BASE MEJORADO PARA ERRORES --- */
+.error-ortografia {
+  background: linear-gradient(135deg, rgba(255, 248, 220, 0.8) 0%, rgba(255, 248, 220, 0.4) 100%);
+  color: inherit;
+  cursor: help;
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: 0 1px;
+  text-decoration-style: wavy;
+  text-decoration-thickness: var(--underline-thickness);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+  font-weight: 500;
+  backdrop-filter: blur(2px);
+  border: 1px solid transparent;
+}
+
+/* Efecto hover general */
+.error-ortografia:hover {
+  transform: scale(var(--hover-scale));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  position: relative;
+}
+
+/* Animación de pulso sutil */
+@keyframes subtlePulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+.error-ortografia {
+  animation: subtlePulse 3s ease-in-out infinite;
+}
+
+/* --- ESTILOS ESPECÍFICOS POR CATEGORÍA MEJORADOS --- */
+
+/* Errores de ortografía (typos) - Rojo elegante */
+.error-ortografia.categoria-typo {
+  text-decoration-color: var(--typo-color);
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, var(--highlight-opacity)) 0%, 
+    rgba(239, 68, 68, calc(var(--highlight-opacity) * 0.6)) 100%);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.error-ortografia.categoria-typo:hover {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, calc(var(--highlight-opacity) * 1.5)) 0%, 
+    rgba(239, 68, 68, var(--highlight-opacity)) 100%);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #dc2626;
+}
+
+.error-ortografia.categoria-typo::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--typo-color), #f87171);
+  border-radius: 5px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.error-ortografia.categoria-typo:hover::before {
+  opacity: 0.1;
+}
+
+/* Errores de gramática - Azul profesional */
+.error-ortografia.categoria-gramatica {
+  text-decoration-color: var(--gramatica-color);
+  background: linear-gradient(135deg, 
+    rgba(99, 102, 241, var(--highlight-opacity)) 0%, 
+    rgba(99, 102, 241, calc(var(--highlight-opacity) * 0.6)) 100%);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.error-ortografia.categoria-gramatica:hover {
+  background: linear-gradient(135deg, 
+    rgba(99, 102, 241, calc(var(--highlight-opacity) * 1.5)) 0%, 
+    rgba(99, 102, 241, var(--highlight-opacity)) 100%);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #4f46e5;
+}
+
+.error-ortografia.categoria-gramatica::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--gramatica-color), #818cf8);
+  border-radius: 5px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.error-ortografia.categoria-gramatica:hover::before {
+  opacity: 0.1;
+}
+
+/* Errores de estilo - Naranja vibrante */
+.error-ortografia.categoria-estilo {
+  text-decoration-color: var(--estilo-color);
+  background: linear-gradient(135deg, 
+    rgba(245, 158, 11, var(--highlight-opacity)) 0%, 
+    rgba(245, 158, 11, calc(var(--highlight-opacity) * 0.6)) 100%);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.error-ortografia.categoria-estilo:hover {
+  background: linear-gradient(135deg, 
+    rgba(245, 158, 11, calc(var(--highlight-opacity) * 1.5)) 0%, 
+    rgba(245, 158, 11, var(--highlight-opacity)) 100%);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #d97706;
+}
+
+.error-ortografia.categoria-estilo::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--estilo-color), #fbbf24);
+  border-radius: 5px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.error-ortografia.categoria-estilo:hover::before {
+  opacity: 0.1;
+}
+
+/* Otros errores - Gris sofisticado */
+.error-ortografia.categoria-otro {
+  text-decoration-color: var(--otro-color);
+  background: linear-gradient(135deg, 
+    rgba(107, 114, 128, var(--highlight-opacity)) 0%, 
+    rgba(107, 114, 128, calc(var(--highlight-opacity) * 0.6)) 100%);
+  border-color: rgba(107, 114, 128, 0.2);
+}
+
+.error-ortografia.categoria-otro:hover {
+  background: linear-gradient(135deg, 
+    rgba(107, 114, 128, calc(var(--highlight-opacity) * 1.5)) 0%, 
+    rgba(107, 114, 128, var(--highlight-opacity)) 100%);
+  border-color: rgba(107, 114, 128, 0.4);
+  color: #4b5563;
+}
+
+.error-ortografia.categoria-otro::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--otro-color), #9ca3af);
+  border-radius: 5px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.error-ortografia.categoria-otro:hover::before {
+  opacity: 0.1;
+}
+
+/* --- EFECTOS ESPECIALES --- */
+
+/* Efecto de destello al hacer clic */
+@keyframes clickFlash {
+  0% { background-color: rgba(255, 255, 255, 0.8); }
+  100% { background-color: transparent; }
+}
+
+.error-ortografia:active {
+  animation: clickFlash 0.2s ease-out;
+  transform: scale(0.98);
+}
+
+/* Tooltip mejorado (si se usa) */
+.error-ortografia[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 5px;
+  backdrop-filter: blur(10px);
+}
+
+.error-ortografia[title]:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+}
+
+/* --- MODO OSCURO (OPCIONAL) --- */
+@media (prefers-color-scheme: dark) {
+  .error-ortografia {
+    background: linear-gradient(135deg, rgba(55, 65, 81, 0.6) 0%, rgba(55, 65, 81, 0.3) 100%);
+  }
+  
+  .error-ortografia.categoria-typo {
+    background: linear-gradient(135deg, 
+      rgba(239, 68, 68, 0.2) 0%, 
+      rgba(239, 68, 68, 0.1) 100%);
+  }
+  
+  .error-ortografia.categoria-gramatica {
+    background: linear-gradient(135deg, 
+      rgba(99, 102, 241, 0.2) 0%, 
+      rgba(99, 102, 241, 0.1) 100%);
+  }
+  
+  .error-ortografia.categoria-estilo {
+    background: linear-gradient(135deg, 
+      rgba(245, 158, 11, 0.2) 0%, 
+      rgba(245, 158, 11, 0.1) 100%);
+  }
+  
+  .error-ortografia.categoria-otro {
+    background: linear-gradient(135deg, 
+      rgba(107, 114, 128, 0.2) 0%, 
+      rgba(107, 114, 128, 0.1) 100%);
+  }
+}
+
+/* --- ACCESIBILIDAD --- */
+@media (prefers-reduced-motion: reduce) {
+  .error-ortografia {
+    animation: none;
+    transition: none;
+  }
+  
+  .error-ortografia:hover {
+    transform: none;
+  }
+}
+
+/* Para usuarios con problemas de visión */
+@media (prefers-contrast: high) {
+  .error-ortografia {
+    border-width: 2px;
+    text-decoration-thickness: 3px;
+  }
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Opciones del Revisor Ortográfico</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            color: #005a9c;
+            border-bottom: 2px solid #005a9c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            color: #333;
+        }
+        #diccionario {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
+            color: green;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Opciones del Revisor Ortográfico</h1>
+    
+    <h2>Diccionario Personal</h2>
+    <p>
+        Aquí puedes ver y editar las palabras que has decidido ignorar.
+        Cada palabra debe estar en una línea nueva.
+    </p>
+    
+    <textarea id="diccionario"></textarea>
+    
+    <button id="guardar">Guardar Cambios</button>
+    
+    <div id="status"></div>
+
+    <script src="options.js"></script>
+</body>
+</html>
