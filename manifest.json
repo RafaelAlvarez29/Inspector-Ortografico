@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Revisor Ortográfico en Vivo",
-  "version": "1.4",
+  "version": "2.3",
   "description": "Resalta errores ortográficos, permite ignorar palabras y exportarlos en CSV.",
   "permissions": [
     "activeTab",
@@ -13,7 +13,8 @@
     "https://api.languagetool.org/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup.html",
@@ -28,5 +29,16 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "options_page": "options.html"
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "lib/batching.js",
+        "lib/tooltip.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }

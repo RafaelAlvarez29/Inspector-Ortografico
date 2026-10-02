@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Corrector Ortográfico</title>
+  <link rel="stylesheet" href="fonts/inter.css">
   <link rel="stylesheet" href="popup.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
     <header class="header">
       <img src="icon48.png" alt="Icono" class="logo">
       <h1>Inspector Ortográfico</h1>
+      <button id="opciones" class="icono-btn" title="Abrir opciones y diccionario personal" aria-label="Opciones">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+      </button>
     </header>
 
     <div class="actions">
@@ -34,14 +35,37 @@
         </button>
     </div>
 
+    <div class="actions" style="margin-top: 8px;">
+      <label class="campo-idioma">
+        <span>Idioma</span>
+        <select id="idioma">
+          <option value="es">Español</option>
+          <option value="auto">Detectar automáticamente</option>
+          <option value="en-US">Inglés (EE. UU.)</option>
+          <option value="en-GB">Inglés (Reino Unido)</option>
+          <option value="pt-BR">Portugués (Brasil)</option>
+          <option value="fr">Francés</option>
+          <option value="de-DE">Alemán</option>
+          <option value="it">Italiano</option>
+        </select>
+      </label>
+    </div>
+
     <hr class="divider">
 
+    <div id="filtros" class="filtros" hidden></div>
+
     <div id="status" class="status-message">Haz clic en "Revisar" para comenzar.</div>
+    <div id="deshacer" class="deshacer" hidden>
+      <span id="deshacerTexto"></span>
+      <button type="button" id="deshacerBtn">Deshacer</button>
+    </div>
+
     <div id="listaErrores" class="error-list">
       <!-- El contenido de los errores se generará aquí con JavaScript -->
     </div>
   </div>
 
-  <script src="popup.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

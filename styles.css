@@ -201,33 +201,25 @@
   transform: scale(0.98);
 }
 
-/* Tooltip mejorado (si se usa) */
-.error-ortografia[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 6px 10px;
+/* Tooltip propio. Vive en <body> con position: fixed y lo posiciona
+   content.js, para que ningun overflow lo recorte y nunca salga de pantalla. */
+.inspector-ortografico-tooltip {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2147483647;
+  max-width: 320px;
+  width: max-content;
+  padding: 8px 10px;
+  background: rgba(20, 20, 20, 0.96);
+  color: #fff;
+  font: 12px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-align: left;
+  white-space: pre-line;
   border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  margin-bottom: 5px;
-  backdrop-filter: blur(10px);
-}
-
-.error-ortografia[title]:hover::before {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 4px solid transparent;
-  border-top-color: rgba(0, 0, 0, 0.9);
-  z-index: 1000;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
 }
 
 /* --- MODO OSCURO (OPCIONAL) --- */
@@ -279,4 +271,13 @@
     border-width: 2px;
     text-decoration-thickness: 3px;
   }
+}
+/* Palabra ignorada: se conserva el <mark> para poder deshacer, pero sin
+   ningun indicio visual. Desaparece de verdad en la siguiente revision. */
+mark.error-ortografia.error-ignorado,
+mark.error-ortografia.error-ignorado::before,
+mark.error-ortografia.error-ignorado::after {
+  all: unset;
+  font: inherit;
+  color: inherit;
 }

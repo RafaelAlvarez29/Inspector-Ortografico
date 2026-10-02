@@ -62,7 +62,8 @@ body {
   width: 32px;
   height: 32px;
   margin-right: 12px;
-  border-radius: var(--radius-sm);
+  /* El icono es circular: el recuadro que lo envuelve debe serlo tambien. */
+  border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
   padding: 4px;
   backdrop-filter: blur(10px);
@@ -398,3 +399,183 @@ body {
     margin: -16px -16px 20px -16px;
   }
 }
+/* --- SELECTOR DE IDIOMA --- */
+.campo-idioma {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  font-size: 12px;
+  color: #6b7280;
+}
+.campo-idioma select {
+  flex: 1;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 12px;
+  color: #111827;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.campo-idioma select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+/* --- PASTILLAS DE CONTEO Y FILTRO --- */
+/* Hacen de leyenda de colores y de filtro a la vez. */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 4px;
+}
+.filtros[hidden] { display: none; }
+
+.filtro {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  color: #4b5563;
+  background: #f3f4f6;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.filtro:hover { background: #e5e7eb; }
+.filtro:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; }
+
+.filtro-numero {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* El punto de color es la leyenda: mismo color que el resaltado en la pagina. */
+.filtro.categoria-typo::before,
+.filtro.categoria-gramatica::before,
+.filtro.categoria-estilo::before,
+.filtro.categoria-otro::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.filtro.categoria-typo::before      { background: #ef4444; }
+.filtro.categoria-gramatica::before { background: #3b82f6; }
+.filtro.categoria-estilo::before    { background: #f59e0b; }
+.filtro.categoria-otro::before      { background: #9ca3af; }
+
+.filtro.activo {
+  color: #111827;
+  background: #fff;
+  border-color: #9ca3af;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* --- FILA DE ERROR COMO <button> --- */
+/* Era un <div> con listener: no recibia foco ni respondia a Enter. */
+button.error-item {
+  display: block;
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  background: none;
+  cursor: pointer;
+}
+button.error-item:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+/* Contador de ocurrencias de la misma palabra. */
+.repeticiones {
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #374151;
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+.repeticiones::before { content: '\00d7'; }
+
+/* Al navegar entre ocurrencias se muestra "2/5" junto a la palabra. */
+.error-item[data-posicion]::after {
+  content: attr(data-posicion);
+  float: right;
+  font-size: 10px;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+.ignorar-btn { cursor: pointer; }
+.ignorar-btn:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; }
+
+/* --- BOTON DE ICONO EN LA CABECERA --- */
+.icono-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding: 6px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.icono-btn:hover { background: rgba(255, 255, 255, 0.32); }
+.icono-btn:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+
+/* --- BARRA DE DESHACER --- */
+.deshacer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #1f2937;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+}
+.deshacer[hidden] { display: none; }
+.deshacer span { flex: 1; }
+.deshacer button {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: #92400e;
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.deshacer button:focus-visible { outline: 2px solid #92400e; outline-offset: 1px; }
+
+/* --- BOTON COPIAR CORRECCION --- */
+.copiar-btn {
+  margin-left: 6px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #374151;
+  background: #e5e7eb;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.copiar-btn:hover { background: #d1d5db; }
+.copiar-btn:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; }
+.copiar-btn.copiado { color: #065f46; background: #a7f3d0; }
