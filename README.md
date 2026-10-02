@@ -187,21 +187,103 @@ npm test
 └── tools/                  Generación de los iconos
 ```
 
-### Cómo funciona
+### Arquitectura
 
-1. `content.js` recorre el DOM y recoge los nodos de texto visibles, saltándose
-   `script`, `style`, campos editables y elementos ocultos.
-2. `background.js` agrupa ese texto en **lotes de hasta 15 000 caracteres**
-   separados por párrafos y los envía a LanguageTool con un máximo de dos
-   peticiones simultáneas, reintentando ante errores `429`.
-3. Los resultados vuelven con posiciones relativas al lote; `batching.js` las
-   traduce de vuelta al nodo y desplazamiento originales.
-4. `content.js` descarta los resultados de nodos que hayan cambiado durante la
-   espera y envuelve el resto en elementos `<mark>`.
+La extensión vive en tres contextos aislados que solo pueden hablar entre sí
+mediante mensajes. Las etiquetas de las flechas son los nombres reales de los
+mensajes del código:
 
-La red se hace desde el *service worker* y no desde la página, para evitar la
-política de seguridad de contenido del sitio revisado y para controlar el ritmo
-de peticiones en un único punto.
+```mermaid
+flowchart LR
+    subgraph pagina["Pestaña revisada"]
+        DOM[("Texto de<br/>la página")]
+        CS["content.js<br/>recorre el DOM<br/>y resalta"]
+    end
+
+    subgraph extension["Extensión"]
+        POP["popup.js<br/>panel"]
+        BG["background.js<br/>service worker"]
+        ST[("chrome.storage")]
+    end
+
+    LT{{"api.languagetool.org"}}
+
+    POP -- "iniciarRevision" --> CS
+    CS -- "revisarTextos" --> BG
+    BG -- "HTTPS" --> LT
+    BG -- "progreso" --> POP
+    CS -- "guardarErrores" --> BG
+    POP -- "obtenerErrores<br/>exportarCSV" --> BG
+    CS <--> DOM
+    BG <--> ST
+```
+
+**Por qué la red se hace desde el *service worker* y no desde la página:** así se
+esquiva la política de seguridad de contenido del sitio revisado, que puede
+bloquear peticiones salientes, y el control de ritmo queda en un único punto
+para todas las pestañas.
+
+### Flujo de una revisión
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant P as Panel
+    participant C as content.js
+    participant B as service worker
+    participant L as LanguageTool
+
+    U->>P: Pulsa «Revisar Página»
+    P->>C: inyecta content.js y styles.css
+    P->>C: iniciarRevision
+    C->>C: recoge los nodos de texto visibles
+    C->>B: revisarTextos (textos, idioma)
+    B->>B: agrupa en lotes de 15 000 caracteres
+
+    loop por lote, máximo 2 simultáneos
+        B->>L: POST /v2/check
+        L-->>B: coincidencias con offsets del lote
+        B-->>P: progreso (hechos, total)
+    end
+
+    B->>B: traduce los offsets al nodo de origen
+    B-->>C: hallazgos y lotes fallidos
+    C->>C: descarta nodos que cambiaron
+    C->>C: envuelve el resto en marcas
+    C->>B: guardarErrores
+    C-->>P: errores y estado
+    P->>U: lista agrupada y filtrable
+```
+
+El paso 8 es la razón de que un fallo de red **no** se confunda con «sin
+errores»: los lotes que fracasan se cuentan aparte y el panel avisa de que el
+informe es parcial.
+
+### Cómo se extrae el texto y se recuperan las posiciones
+
+Enviar una petición por nodo de texto agotaría el límite de la API en cualquier
+página real. Los nodos se concatenan en un solo lote separados por una línea en
+blanco —para que LanguageTool no cruce reglas gramaticales entre textos que no
+tienen relación— y después se traduce de vuelta cada posición:
+
+```
+Nodos      [ "Olaa mundo" ]  [ "esto es un erorr" ]  [ "ok" ]
+                  │                    │                 │
+                  └──────── concatenar con "\n\n" ────────┘
+                                       ▼
+Lote       "Olaa mundo\n\nesto es un erorr\n\nok"
+offsets     0         10            23       30
+
+LanguageTool devuelve   offset 23, longitud 5
+                                 │
+                   restar el inicio del nodo (12)
+                                 ▼
+Resultado   nodo 1, offset 11  →  "erorr"
+```
+
+Si una coincidencia cruzara el separador se descarta: significaría que abarca
+dos nodos distintos y resaltarla corrompería el DOM.
 
 ### Los iconos
 
