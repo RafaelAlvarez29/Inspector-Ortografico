@@ -5,8 +5,9 @@ Las figuras se definen con funciones de distancia con signo (SDF) y se dibujan
 a una resolucion varias veces mayor que la final; al reducir por promedio se
 obtiene el antialiasing. El PNG se escribe a mano con zlib.
 
-Concepto del logotipo: una lupa cuyo cristal contiene el subrayado ondulado
-rojo que todo editor usa para marcar una palabra mal escrita.
+Concepto del logotipo: una lupa cuyo cristal lleva recortado el subrayado
+ondulado que todo editor usa para marcar una palabra mal escrita. Monocromo,
+con el mismo color primario que la interfaz (--primary-color, #6366f1).
 """
 import math
 import struct
@@ -17,6 +18,10 @@ BLANCO = (0xFF, 0xFF, 0xFF)
 # Cada paleta define el degradado del disco, el borde opcional que lo separa
 # de una barra de herramientas oscura, el tono del cristal y el de la onda.
 PALETAS = {
+    # Monocromatica: un solo color (el del sistema) y blanco. La lente es un
+    # disco blanco solido y la onda se recorta en el, dejando ver el fondo.
+    'mono': dict(mono=True, fondo=((0x63, 0x66, 0xF1), (0x63, 0x66, 0xF1)),
+                 borde=None, cristal=(0xFF, 0xFF, 0xFF), onda=None),
     'azul': dict(fondo=((0x3B, 0x82, 0xF6), (0x1D, 0x4E, 0xD8)),
                  borde=None, cristal=(0xF8, 0xFA, 0xFC), onda=(0xEF, 0x44, 0x44)),
     'A': dict(fondo=((0x00, 0x00, 0x00), (0x00, 0x00, 0x00)),
@@ -88,6 +93,12 @@ PERFILES = {
     'normal': dict(lente=(54, 52), lente_r=30, aro=10,
                    mango_fin=(98, 96), mango=14,
                    onda_ancho=18, onda_amp=4.5, onda_grosor=6.0, onda_ciclos=2),
+    # En monocromo la lente es maciza, asi que a 16 px se empasta con el mango
+    # y la onda recortada se cierra. Lente mas chica, onda mas gruesa y de un
+    # solo ciclo: menos informacion, pero la que queda se lee.
+    'mono-compacto': dict(lente=(55, 52), lente_r=34, aro=10,
+                          mango_fin=(101, 98), mango=16,
+                          onda_ancho=17, onda_amp=8, onda_grosor=9, onda_ciclos=1.5),
     'compacto': dict(lente=(56, 54), lente_r=36, aro=13,
                      mango_fin=(100, 97), mango=17,
                      onda_ancho=21, onda_amp=6.5, onda_grosor=9.5, onda_ciclos=1.5),
@@ -128,6 +139,7 @@ def dibujar(lado, perfil='normal', paleta='azul'):
             t = py / max(1, lado - 1)
             c0, c1 = pal['fondo']
             color = tuple(a + (b - a) * t for a, b in zip(c0, c1))
+            fondo_plano = color
 
             # Borde: lo que evita que un disco oscuro se funda con una barra
             # de herramientas oscura. Se pinta como un anillo pegado al canto.
@@ -138,29 +150,40 @@ def dibujar(lado, perfil='normal', paleta='azul'):
                 if a_borde > 0:
                     color = mezclar(color, col_borde, a_borde)
 
-            # Cristal: un velo claro para que la onda roja no vaya sobre el azul.
-            a_cristal = cobertura(sdf_circulo(x, y, lente_cx, lente_cy, lente_r - aro / 2))
-            if a_cristal > 0:
-                color = mezclar(color, pal['cristal'], a_cristal * 0.93)
-
-            # Subrayado ondulado rojo dentro del cristal.
+            a_mango = cobertura(
+                sdf_capsula(x, y, mango_ax, mango_ay, mango_bx, mango_by, p['mango'] * u)
+            )
             a_onda = cobertura(
                 sdf_onda(x, y, lente_cx - p['onda_ancho'] * u, lente_cx + p['onda_ancho'] * u,
                          lente_cy + 7 * u, p['onda_amp'] * u, p['onda_grosor'] * u,
                          p['onda_ciclos'])
             )
-            a_onda = min(a_onda, a_cristal)
-            if a_onda > 0:
-                color = mezclar(color, pal['onda'], a_onda)
 
-            # Mango y aro de la lupa, en blanco.
-            a_mango = cobertura(
-                sdf_capsula(x, y, mango_ax, mango_ay, mango_bx, mango_by, p['mango'] * u)
-            )
-            a_aro = cobertura(sdf_anillo(x, y, lente_cx, lente_cy, lente_r, aro))
-            a_lupa = max(a_mango, a_aro)
-            if a_lupa > 0:
-                color = mezclar(color, BLANCO, a_lupa)
+            if pal.get('mono'):
+                # La lente es un disco blanco macizo; el mango se le une.
+                a_lente = cobertura(sdf_circulo(x, y, lente_cx, lente_cy, lente_r + aro / 2))
+                color = mezclar(color, pal['cristal'], max(a_lente, a_mango))
+
+                # La onda se recorta: dentro de la lente devuelve el color del
+                # fondo, que es lo que se ve a traves del hueco.
+                hueco = min(a_onda, a_lente)
+                if hueco > 0:
+                    color = mezclar(color, fondo_plano, hueco)
+            else:
+                # Cristal: un velo claro para que la onda no vaya sobre el azul.
+                a_cristal = cobertura(
+                    sdf_circulo(x, y, lente_cx, lente_cy, lente_r - aro / 2))
+                if a_cristal > 0:
+                    color = mezclar(color, pal['cristal'], a_cristal * 0.93)
+
+                sobre_cristal = min(a_onda, a_cristal)
+                if sobre_cristal > 0:
+                    color = mezclar(color, pal['onda'], sobre_cristal)
+
+                a_aro = cobertura(sdf_anillo(x, y, lente_cx, lente_cy, lente_r, aro))
+                a_lupa = max(a_mango, a_aro)
+                if a_lupa > 0:
+                    color = mezclar(color, BLANCO, a_lupa)
 
             r, g, b = (int(round(max(0, min(255, c)))) for c in color)
             fila.append((r, g, b, int(round(a_fondo * 255))))
@@ -222,7 +245,8 @@ if __name__ == '__main__':
     paleta = sys.argv[1] if len(sys.argv) > 1 else 'azul'
     destino = sys.argv[2] if len(sys.argv) > 2 else 'icon%d.png'
 
-    for lado, factor, perfil in ((128, 4, 'normal'), (48, 8, 'normal'), (16, 8, 'compacto')):
+    chico = 'mono-compacto' if paleta == 'mono' else 'compacto'
+    for lado, factor, perfil in ((128, 4, 'normal'), (48, 8, 'normal'), (16, 8, chico)):
         grande = dibujar(lado * factor, perfil, paleta)
         final = reducir(grande, factor)
         ruta = destino % lado

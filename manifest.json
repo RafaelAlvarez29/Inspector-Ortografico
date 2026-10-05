@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Revisor Ortográfico en Vivo",
-  "version": "2.3",
+  "name": "Inspector Ortográfico",
+  "version": "4.3",
   "description": "Resalta errores ortográficos, permite ignorar palabras y exportarlos en CSV.",
   "permissions": [
     "activeTab",

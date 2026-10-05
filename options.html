@@ -2,161 +2,21 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Opciones del Inspector Ortográfico</title>
+    <title>Opciones · Inspector Ortográfico</title>
     <link rel="stylesheet" href="fonts/inter.css">
-    <style>
-        :root {
-            --primario: #005a9c;
-            --borde: #ccd3da;
-            --texto-suave: #5b6672;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 20px;
-            max-width: 600px;
-            margin: 20px auto;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        h1 {
-            color: var(--primario);
-            border-bottom: 2px solid var(--primario);
-            padding-bottom: 10px;
-        }
-        h2 { margin-top: 30px; color: #333; }
-        p { line-height: 1.6; }
-        .ayuda { font-size: 13px; color: var(--texto-suave); }
-
-        /* --- CAMPO DE CHIPS --- */
-        /* Parece un input, pero es un contenedor con los chips y un input real
-           dentro, que crece hasta ocupar el ancho libre de la ultima fila. */
-        .campo-chips {
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            gap: 6px;
-            min-height: 160px;
-            padding: 10px;
-            background: #fff;
-            border: 1px solid var(--borde);
-            border-radius: 8px;
-            cursor: text;
-        }
-        .campo-chips:focus-within {
-            border-color: var(--primario);
-            box-shadow: 0 0 0 3px rgba(0, 90, 156, 0.15);
-        }
-
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            max-width: 100%;
-            padding: 4px 4px 4px 10px;
-            font-size: 13px;
-            line-height: 1.4;
-            color: #0b3d61;
-            background: #e4eef6;
-            border: 1px solid #c3dcee;
-            border-radius: 999px;
-        }
-        .chip-texto {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .chip-quitar {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 18px;
-            height: 18px;
-            padding: 0;
-            font-size: 14px;
-            line-height: 1;
-            color: #0b3d61;
-            background: transparent;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        .chip-quitar:hover { background: rgba(11, 61, 97, 0.15); }
-        .chip-quitar:focus-visible { outline: 2px solid var(--primario); outline-offset: 1px; }
-        .chip.saliendo { opacity: 0.4; }
-
-        #entrada {
-            flex: 1 1 140px;
-            min-width: 140px;
-            padding: 4px 2px;
-            font: inherit;
-            font-size: 14px;
-            color: inherit;
-            background: transparent;
-            border: none;
-            outline: none;
-        }
-
-        .barra {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-top: 16px;
-        }
-        button#guardar {
-            padding: 10px 20px;
-            font: inherit;
-            font-size: 15px;
-            font-weight: 600;
-            color: white;
-            background-color: #007bff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        button#guardar:hover { background-color: #0056b3; }
-        button#guardar:disabled { background-color: #9bbfe0; cursor: default; }
-        button#guardar:focus-visible { outline: 2px solid var(--primario); outline-offset: 2px; }
-
-        #conteo { font-size: 13px; color: var(--texto-suave); }
-
-        #status {
-            margin-top: 15px;
-            font-weight: bold;
-            min-height: 20px;
-            color: green;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        #status.aviso { color: #a35b00; }
-    </style>
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="configuracion.css">
+    <link rel="stylesheet" href="options.css">
 </head>
 <body>
-    <h1>Opciones del Inspector Ortográfico</h1>
+    <div class="container">
+        <header class="header">
+            <img src="icon48.png" alt="" class="logo">
+            <h1>Inspector Ortográfico</h1>
+        </header>
 
-    <h2>Diccionario Personal</h2>
-    <p>
-        Estas son las palabras que el inspector no marcará como error.
-    </p>
-    <p class="ayuda">
-        Escribe una palabra y pulsa <kbd>Espacio</kbd>, <kbd>Enter</kbd>, <kbd>Tab</kbd> o
-        <kbd>,</kbd> para añadirla. También puedes pegar una lista entera.
-        <kbd>Retroceso</kbd> con el campo vacío borra la última.
-    </p>
-
-    <div class="campo-chips" id="campo">
-        <!-- Los chips se insertan aquí antes del input -->
-        <input id="entrada" type="text" autocomplete="off" spellcheck="false"
-               aria-label="Añadir palabra al diccionario"
-               placeholder="Añadir palabra...">
+        <div id="config"></div>
     </div>
-
-    <div class="barra">
-        <button id="guardar" type="button">Guardar Cambios</button>
-        <span id="conteo"></span>
-    </div>
-
-    <div id="status" role="status"></div>
 
     <script type="module" src="options.js"></script>
 </body>

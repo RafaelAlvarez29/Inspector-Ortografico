@@ -40,6 +40,7 @@ agrupación de errores repetidos.
 | **Exportación a CSV** | Informe con palabra, mensaje, sugerencias, categoría, URL y fecha. |
 | **8 idiomas + detección automática** | Español, inglés (EE. UU. / Reino Unido), portugués (Brasil), francés, alemán e italiano. |
 | **Navegable con teclado** | Toda la interfaz es accesible con `Tab` y `Enter`. |
+| **Modo claro y oscuro** | Sigue el tema del sistema, o se fuerza desde las opciones. |
 
 ## Capturas
 
@@ -105,10 +106,12 @@ Desde el panel puedes:
 | Ignorar una palabra | Botón **Ignorar**. Se añade a tu diccionario personal. |
 | Deshacer el ignorar | Botón **Deshacer** de la barra que aparece durante unos segundos. |
 | Filtrar por categoría | Pulsa una de las pastillas de recuento. |
-| Cambiar de idioma | Selector **Idioma**. Se recuerda para la próxima vez. |
 | Exportar el informe | **Exportar CSV**. |
 | Limpiar los resaltados | **Limpiar**. |
+| Cambiar de idioma | Icono ⚙ de la cabecera → sección **Idioma**. |
+| Cambiar el tema | Icono ⚙ → **Apariencia**: automático, claro u oscuro. |
 | Gestionar el diccionario | Icono ⚙ de la cabecera. |
+| Volver de la configuración | Flecha ←, <kbd>Esc</kbd>, o al guardar. |
 
 ### El informe CSV
 
@@ -150,6 +153,13 @@ Se genera con BOM UTF-8, de modo que Excel respeta las tildes al abrirlo.
 | `downloads` | Descargar el informe CSV. |
 | `api.languagetool.org` | Enviar el texto a analizar. |
 
+### Configuración
+
+El idioma y el diccionario viven en una vista que **se desliza sobre el propio
+panel** al pulsar el engranaje, sin abrir otra pestaña. La misma vista está
+disponible como página independiente (clic derecho sobre el icono → Opciones, o
+desde `chrome://extensions`); ambas montan el mismo componente.
+
 ## Desarrollo
 
 ### Requisitos
@@ -170,8 +180,10 @@ npm test
 ├── manifest.json           Configuración de la extensión (MV3)
 ├── background.js           Service worker: llamadas a la API y estado
 ├── content.js              Script de página: recorre el DOM y resalta
+├── base.css                Tokens y primitivas compartidas por las dos pantallas
+├── configuracion.css       Estilos de la vista de ajustes
 ├── popup.html/.js/.css     Panel de la extensión
-├── options.html/.js        Diccionario personal
+├── options.html/.js/.css   La vista de ajustes como página independiente
 ├── styles.css              Estilos inyectados en la página revisada
 ├── lib/                    Lógica pura, sin DOM ni red (cubierta por pruebas)
 │   ├── batching.js           Agrupa el texto en lotes y mapea los offsets
@@ -181,7 +193,10 @@ npm test
 │   ├── render.js             Construye el DOM del panel sin innerHTML
 │   ├── tooltip.js            Calcula la posición del globo de ayuda
 │   ├── estado.js             Decide si los resultados siguen vigentes
-│   └── diccionario.js        Normaliza y deduplica palabras
+│   ├── diccionario.js        Normaliza y deduplica palabras
+│   ├── configuracion.js      Vista de ajustes, montada en el panel y en la página
+│   ├── idiomas.js            Catálogo de idiomas
+│   └── paginas.js            Qué páginas se pueden revisar
 ├── fonts/                  Tipografía Inter empaquetada
 ├── test/                   Pruebas (node:test + jsdom)
 └── tools/                  Generación de los iconos
@@ -306,7 +321,8 @@ escribe directamente con `zlib`.
   los resultados de las zonas modificadas se descartan para no señalar texto
   correcto. Vuelve a revisar cuando termine de cargar.
 - **Páginas restringidas.** Chrome no permite ejecutar extensiones en
-  `chrome://`, en la Chrome Web Store ni en otras páginas internas.
+  `chrome://`, en la Chrome Web Store ni en otras páginas internas. En ellas el
+  botón «Revisar Página» aparece desactivado con el motivo.
 - **El resaltado no sobrevive a una recarga.** Tras recargar la página hay que
   volver a pulsar «Revisar».
 

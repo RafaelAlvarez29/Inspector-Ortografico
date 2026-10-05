@@ -1,0 +1,169 @@
+/* =========================================================================
+   VISTA DE CONFIGURACION
+   La cargan el panel y la pagina independiente: es el mismo componente
+   montado en dos sitios, asi que sus estilos tampoco pueden estar duplicados.
+   ========================================================================= */
+
+.config-titulo {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.config-titulo + .ayuda {
+  margin-top: 0;
+}
+
+.ayuda {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* --- SELECTOR DE IDIOMA --- */
+.campo-idioma {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.campo-idioma select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* --- CAMPO DE ETIQUETAS DEL DICCIONARIO --- */
+/* Parece un campo de texto, pero es un contenedor con las etiquetas y un input
+   real dentro que crece hasta ocupar el ancho libre de la ultima fila. */
+.campo-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  min-height: 132px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--borde-control);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: text;
+  transition: var(--transition);
+}
+
+.campo-chips:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: var(--foco);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 3px 3px 3px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-primary);
+  background: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+}
+
+.chip-texto {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-quitar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 24x24 es el minimo recomendado para un objetivo pulsable. */
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.chip-quitar:hover {
+  color: var(--text-primary);
+  background: var(--secondary-hover);
+}
+
+#entrada {
+  flex: 1 1 140px;
+  min-width: 140px;
+  padding: 4px 2px;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+#entrada::placeholder {
+  /* --text-muted da 2,5:1 en claro y 3,7:1 en oscuro: un marcador de posicion
+     es texto y WCAG 1.4.3 le exige 4,5:1. */
+  color: var(--text-secondary);
+}
+
+/* --- BARRA DE GUARDADO --- */
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.barra .button {
+  /* Los botones del panel ocupan todo el ancho; aqui no procede. */
+  width: auto;
+  flex: 0 0 auto;
+  padding: 10px 16px;
+}
+
+#conteo {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.config-status {
+  margin-top: 12px;
+  min-height: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--success-color);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.config-status.aviso {
+  color: var(--aviso-accion);
+}

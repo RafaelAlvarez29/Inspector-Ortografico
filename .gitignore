@@ -3,3 +3,7 @@ node_modules/
 demo-popup.html
 logos-propuestos/
 verificar-mermaid.html
+ver-icono.html
+__pycache__/
+*.pyc
+demo-options.html

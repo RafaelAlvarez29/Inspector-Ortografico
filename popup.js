@@ -1,15 +1,28 @@
-import { renderizarErrores, renderizarFiltros } from './lib/render.js';
+import { renderizarErrores, renderizarFiltros, renderizarEstado } from './lib/render.js';
 import { estadoSigueVigente } from './lib/estado.js';
 import { agruparErrores, contarPorCategoria } from './lib/agrupar.js';
+import { nombreDeIdioma } from './lib/idiomas.js';
+import { motivoNoRevisable, mensajeDeFallo } from './lib/paginas.js';
+import { montarConfiguracion } from './lib/configuracion.js';
+import { aplicarTema } from './lib/tema.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const botonRevisar = document.getElementById('revisar');
   const botonLimpiar = document.getElementById('limpiar');
   const botonExportar = document.getElementById('exportar');
+  const filaExportar = document.getElementById('accionesExportar');
+  const pieIdioma = document.getElementById('idiomaActivo');
+  const carril = document.getElementById('carril');
+  const vistaPrincipal = document.getElementById('vistaPrincipal');
+  const vistaConfig = document.getElementById('vistaConfig');
+  const botonVolver = document.getElementById('volver');
+  const contenedorConfig = document.getElementById('config');
+  const marcoCarril = document.querySelector('.carril-marco');
+  const cajaProgreso = document.getElementById('progreso');
+  const barraProgreso = document.getElementById('progresoBarra');
   const listaErroresDiv = document.getElementById('listaErrores');
   const filtrosDiv = document.getElementById('filtros');
   const statusDiv = document.getElementById('status');
-  const selectIdioma = document.getElementById('idioma');
   const botonOpciones = document.getElementById('opciones');
   const barraDeshacer = document.getElementById('deshacer');
   const textoDeshacer = document.getElementById('deshacerTexto');
@@ -27,6 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const ocurrenciaPorClave = new Map();
 
   // --- INICIALIZACION ---
+  // El tema se aplica cuanto antes. Las paginas de extension no admiten
+  // scripts en linea, asi que no puede ser antes del primer pintado: quien
+  // fuerce un tema distinto al del sistema vera un destello muy breve.
+  chrome.storage.sync.get(['tema']).then(({ tema }) => aplicarTema(tema));
+
   async function inicializarPopup() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab || !tab.id) {
@@ -35,9 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     activeTab = tab;
+    mostrarIdiomaActivo();
 
-    const { idioma = 'es' } = await chrome.storage.sync.get(['idioma']);
-    selectIdioma.value = idioma;
+    // Chrome no deja actuar sobre sus paginas internas ni sobre su tienda.
+    // Es una accion imposible, no un error: mejor no ofrecerla.
+    const motivo = motivoNoRevisable(tab.url);
+    if (motivo) {
+      vistaPrincipal.dataset.vacio = 'si';
+      renderizarEstado(statusDiv, {
+        tipo: 'bloqueado',
+        titulo: 'Aquí no se puede revisar',
+        detalle: motivo,
+      }, document);
+      statusDiv.hidden = false;
+      botonRevisar.disabled = true;
+      botonLimpiar.style.display = 'none';
+      filaExportar.style.display = 'none';
+      return;
+    }
 
     let guardados = [];
     try {
@@ -69,6 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarErroresUI(erroresActuales);
   }
 
+  // El idioma se edita en Opciones; aqui solo se recuerda cual esta activo,
+  // para que un resultado extraño por idioma equivocado tenga explicacion.
+  async function mostrarIdiomaActivo() {
+    const { idioma } = await chrome.storage.sync.get(['idioma']);
+    pieIdioma.textContent = nombreDeIdioma(idioma);
+  }
+
   async function preguntarALaPagina() {
     try {
       return await chrome.tabs.sendMessage(activeTab.id, { accion: 'ping' });
@@ -78,13 +118,57 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- ACCIONES ---
-  selectIdioma.addEventListener('change', () => {
-    chrome.storage.sync.set({ idioma: selectIdioma.value });
-  });
-
   // Hasta ahora las Opciones solo se alcanzaban con clic derecho sobre el
   // icono de la extension, algo que casi nadie descubre.
-  botonOpciones.addEventListener('click', () => chrome.runtime.openOptionsPage());
+  botonOpciones.addEventListener('click', () => irA('config'));
+  botonVolver.addEventListener('click', () => irA('principal'));
+
+  // --- CARRIL DE VISTAS ---
+  // La configuracion se monta al abrir el panel, no al pulsar el engranaje.
+  // Montarla al vuelo hacia que la animacion arrancase antes de que el
+  // navegador recalculara el tamano, y la primera transicion quedaba a medias.
+  // El coste de tenerla lista de antemano es despreciable.
+  const configuracion = montarConfiguracion(contenedorConfig, {
+    alGuardar: () => setTimeout(() => irA('principal'), 900),
+  });
+
+  function irA(vista) {
+    const aConfig = vista === 'config';
+
+    // Pudo cambiarse el diccionario desde la pagina independiente.
+    if (aConfig) configuracion.cargar();
+
+    carril.dataset.vista = aConfig ? 'config' : 'principal';
+
+    // inert saca a la vista oculta del orden de tabulacion y de los lectores
+    // de pantalla: sin esto se tabula hacia controles invisibles.
+    vistaPrincipal.toggleAttribute('inert', aConfig);
+    vistaPrincipal.setAttribute('aria-hidden', String(aConfig));
+    vistaConfig.toggleAttribute('inert', !aConfig);
+    vistaConfig.setAttribute('aria-hidden', String(!aConfig));
+
+    // preventScroll es imprescindible: enfocar un elemento dentro de un
+    // contenedor con overflow oculto lo desplaza por scroll para "traerlo a la
+    // vista", y el carril acababa a medio camino entre las dos pantallas.
+    if (aConfig) {
+      botonVolver.focus({ preventScroll: true });
+    } else {
+      botonOpciones.focus({ preventScroll: true });
+      mostrarIdiomaActivo();
+    }
+
+    // Red de seguridad: el desplazamiento del carril lo hace el transform, asi
+    // que cualquier scroll del marco es un desajuste.
+    marcoCarril.scrollLeft = 0;
+  }
+
+  // Escape vuelve atras, como en cualquier panel que se superpone.
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && carril.dataset.vista === 'config') {
+      event.preventDefault();
+      irA('principal');
+    }
+  });
 
   botonDeshacer.addEventListener('click', deshacerIgnorar);
 
@@ -92,11 +176,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!activeTab?.id) return;
     listaErroresDiv.replaceChildren();
     filtrosDiv.hidden = true;
+    filaExportar.style.display = 'none';
     filtroActivo = null;
     ocurrenciaPorClave.clear();
-    statusDiv.textContent = 'Revisando, por favor espera...';
-    statusDiv.style.display = 'block';
+    renderizarEstado(statusDiv, {
+      tipo: 'inicial',
+      titulo: 'Revisando la página…',
+      detalle: 'Analizando el texto visible.',
+    }, document);
+    statusDiv.hidden = false;
     botonRevisar.disabled = true;
+    iniciarProgreso();
     botonLimpiar.style.display = 'none';
 
     try {
@@ -113,11 +203,14 @@ document.addEventListener('DOMContentLoaded', () => {
       erroresActuales = resultado?.errores || [];
       mostrarErroresUI(erroresActuales, resultado?.estado);
     } catch (error) {
-      console.error('Fallo la revision:', error);
+      // Un fallo esperado no se registra: acabaria en la lista de errores de
+      // la extension dando a entender que algo esta roto.
+      if (!mensajeDeFallo.esEsperado(error)) console.error('Fallo la revision:', error);
       erroresActuales = [];
-      mostrarErroresUI([], { error: `La revisión no pudo completarse. (${error.message})` });
+      mostrarErroresUI([], { error: mensajeDeFallo(error) });
     } finally {
       botonRevisar.disabled = false;
+      ocultarProgreso();
     }
   });
 
@@ -174,9 +267,40 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarErroresUI(erroresActuales, { error: mensaje.mensaje });
     }
     if (mensaje.accion === 'progreso') {
-      statusDiv.textContent = `Revisando bloque ${mensaje.hechos} de ${mensaje.total}...`;
+      mostrarProgreso(mensaje.hechos, mensaje.total);
     }
   });
+
+  // --- PROGRESO DE LA REVISION ---
+  function iniciarProgreso() {
+    // Hasta que termina el primer lote no se sabe cuantos hay. Una barra
+    // parada en cero pareceria que la revision no avanza, asi que se muestra
+    // indeterminada y pasa a determinada en cuanto llega la primera fraccion.
+    cajaProgreso.hidden = false;
+    cajaProgreso.classList.add('indeterminado');
+    cajaProgreso.removeAttribute('aria-valuenow');
+    cajaProgreso.setAttribute('aria-valuetext', 'Preparando la revisión');
+    barraProgreso.style.width = '';
+  }
+
+  function mostrarProgreso(hechos, total) {
+    const porcentaje = total > 0 ? Math.round((hechos / total) * 100) : 0;
+
+    cajaProgreso.hidden = false;
+    cajaProgreso.classList.remove('indeterminado');
+    barraProgreso.style.width = `${porcentaje}%`;
+    cajaProgreso.setAttribute('aria-valuenow', String(porcentaje));
+    cajaProgreso.setAttribute('aria-valuetext', `Bloque ${hechos} de ${total}`);
+    const detalle = statusDiv.querySelector('.estado-detalle');
+    if (detalle) detalle.textContent = `Bloque ${hechos} de ${total}`;
+  }
+
+  function ocultarProgreso() {
+    cajaProgreso.hidden = true;
+    cajaProgreso.classList.remove('indeterminado');
+    barraProgreso.style.width = '';
+    cajaProgreso.removeAttribute('aria-valuenow');
+  }
 
   // --- COPIAR CORRECCION ---
   async function copiarCorreccion(boton) {
@@ -298,6 +422,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return null;
   }
 
+  // "Aun no has revisado" y "no se encontro nada" son mensajes opuestos:
+  // compartian la misma caja gris y no se distinguian.
+  function estadoVacio(aviso, estado) {
+    if (aviso) return { tipo: 'aviso', titulo: 'Revisión incompleta', detalle: aviso };
+    if (estado) {
+      return {
+        tipo: 'exito',
+        titulo: 'Sin errores',
+        detalle: 'No se encontró ningún problema en el texto visible.',
+      };
+    }
+    return {
+      tipo: 'inicial',
+      titulo: 'Listo para revisar',
+      detalle: 'Pulsa «Revisar Página» para analizar el texto de esta pestaña.',
+    };
+  }
+
   function mostrarErroresUI(errores, estado) {
     const aviso = describirEstado(estado);
     const conteo = contarPorCategoria(errores || []);
@@ -305,11 +447,16 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarFiltros(filtrosDiv, conteo, filtroActivo, document);
     filtrosDiv.hidden = conteo.total === 0;
 
+    // Exportar solo se ofrece cuando hay algo que exportar: un boton que lo
+    // unico que puede hacer es responder "no hay nada" no deberia existir.
+    filaExportar.style.display = conteo.total > 0 ? 'flex' : 'none';
+
+    vistaPrincipal.dataset.vacio = errores && errores.length ? 'no' : 'si';
+
     if (!errores || errores.length === 0) {
       listaErroresDiv.replaceChildren();
-      statusDiv.textContent =
-        aviso || '¡Todo correcto o las palabras desconocidas han sido ignoradas!';
-      statusDiv.style.display = 'block';
+      renderizarEstado(statusDiv, estadoVacio(aviso, estado), document);
+      statusDiv.hidden = false;
       botonLimpiar.style.display = 'none';
       return;
     }
@@ -317,8 +464,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const visibles = filtroActivo ? errores.filter((e) => e.categoria === filtroActivo) : errores;
     renderizarErrores(listaErroresDiv, agruparErrores(visibles), document);
 
-    statusDiv.textContent = aviso || '';
-    statusDiv.style.display = aviso ? 'block' : 'none';
+    if (aviso) {
+      renderizarEstado(statusDiv, {
+        tipo: 'aviso', titulo: 'Revisión incompleta', detalle: aviso,
+      }, document);
+    } else {
+      statusDiv.replaceChildren();
+    }
+    statusDiv.hidden = !aviso;
     botonLimpiar.style.display = 'flex';
   }
 

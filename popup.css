@@ -1,80 +1,23 @@
-/* --- VARIABLES CSS PARA CONSISTENCIA --- */
+/* Alto del panel. Chrome limita la ventana del popup a 600 px; descontando
+   la cabecera y los margenes, este es el espacio util. */
 :root {
-  --primary-color: #6366f1;
-  --primary-hover: #5b5df3;
-  --secondary-color: #f3f4f6;
-  --secondary-hover: #e5e7eb;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --border-color: #e5e7eb;
-  --border-subtle: #f3f4f6;
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --error-color: #ef4444;
-  --surface: #ffffff;
-  --background: #fafafa;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --alto-vista: 452px;
 }
 
-/* --- ESTILOS GLOBALES Y FUENTE --- */
-* {
-  box-sizing: border-box;
+/* --- AJUSTES DE LA CABECERA EN EL PANEL --- */
+/* Se desborda el padding del contenedor para llegar a los bordes. */
+.header {
+  margin: -20px -20px 24px -20px;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
+  /* Ancho fijo del panel de la extension; la tipografia viene de base.css. */
   width: 380px;
-  margin: 0;
-  background: linear-gradient(135deg, var(--background) 0%, #f8fafc 100%);
-  color: var(--text-primary);
-  font-weight: 400;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, var(--background) 0%, var(--fondo-degradado-fin) 100%);
 }
 
 .container {
   padding: 20px;
-  min-height: 400px;
-}
-
-/* --- CABECERA MODERNA --- */
-.header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 24px;
-  padding: 16px 20px;
-  margin: -20px -20px 24px -20px;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  box-shadow: var(--shadow-md);
-}
-
-.header .logo {
-  width: 32px;
-  height: 32px;
-  margin-right: 12px;
-  /* El icono es circular: el recuadro que lo envuelve debe serlo tambien. */
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 4px;
-  backdrop-filter: blur(10px);
-}
-
-.header h1 {
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* --- BOTONES DE ACCIÓN MODERNOS --- */
@@ -82,100 +25,6 @@ body {
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
-}
-
-.button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-  font-family: inherit;
-}
-
-.button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.button:hover::before {
-  left: 100%;
-}
-
-.button:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-lg);
-}
-
-.button:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-.button:disabled {
-  background-color: var(--border-color);
-  cursor: not-allowed;
-  color: var(--text-muted);
-  transform: none;
-  box-shadow: none;
-}
-
-.button:disabled::before {
-  display: none;
-}
-
-.button:disabled svg {
-  stroke: var(--text-muted);
-}
-
-.button-primary {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-  color: white;
-  box-shadow: var(--shadow-md);
-}
-
-.button-primary svg {
-  stroke: white;
-}
-
-.button-secondary {
-  background: var(--surface);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-}
-
-.button-secondary:hover {
-  background: var(--secondary-color);
-  border-color: var(--border-color);
-}
-
-.button-secondary svg {
-  stroke: var(--text-primary);
-}
-
-/* --- DIVISOR ELEGANTE --- */
-.divider {
-  border: none;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
-  margin: 24px 0;
-  position: relative;
 }
 
 .divider::after {
@@ -191,7 +40,21 @@ body {
 }
 
 /* --- MENSAJES DE ESTADO MEJORADOS --- */
+/* Cuando no hay lista, el estado ocupa el hueco libre y se centra, en lugar de
+   quedarse pegado arriba con el panel medio vacio. */
+#vistaPrincipal[data-vacio='si'] .status-message {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-message[hidden] {
+  display: none;
+}
+
 .status-message {
+  flex: 0 0 auto;
   text-align: center;
   color: var(--text-secondary);
   padding: 20px;
@@ -203,19 +66,20 @@ body {
   position: relative;
 }
 
-.status-message::before {
-  content: '📝';
-  display: block;
-  font-size: 24px;
-  margin-bottom: 8px;
-}
-
 /* --- LISTA DE ERRORES MODERNA --- */
 .error-list {
-  max-height: 320px;
+  /* Ocupa el espacio que quede y se desplaza por dentro. */
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   margin-top: 12px;
   padding-right: 4px;
+}
+
+/* Vacia no debe reclamar el espacio sobrante: se lo queda el estado. */
+.error-list:empty {
+  flex: 0 0 auto;
+  margin-top: 0;
 }
 
 .error-list::-webkit-scrollbar {
@@ -355,11 +219,6 @@ body {
   position: relative;
 }
 
-.error-item .sugerencias::before {
-  content: '💡';
-  margin-right: 6px;
-}
-
 /* --- ANIMACIONES SUAVES --- */
 @keyframes fadeIn {
   from {
@@ -372,16 +231,27 @@ body {
   }
 }
 
+/* "both" es imprescindible: sin el, el elemento se ve a opacidad completa
+   durante el retardo y luego salta a cero para animarse. Eso era el parpadeo. */
 .error-item {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.22s ease-out both;
 }
 
-.error-item:nth-child(odd) {
-  animation-delay: 0.1s;
-}
+/* Escalonado corto y acotado: con muchos errores, esperar a que entren todos
+   seria peor que no animar. A partir del octavo entran a la vez. */
+.error-item:nth-child(1) { animation-delay: 0ms; }
+.error-item:nth-child(2) { animation-delay: 25ms; }
+.error-item:nth-child(3) { animation-delay: 50ms; }
+.error-item:nth-child(4) { animation-delay: 75ms; }
+.error-item:nth-child(5) { animation-delay: 100ms; }
+.error-item:nth-child(6) { animation-delay: 125ms; }
+.error-item:nth-child(7) { animation-delay: 150ms; }
+.error-item:nth-child(n + 8) { animation-delay: 175ms; }
 
-.error-item:nth-child(even) {
-  animation-delay: 0.2s;
+@media (prefers-reduced-motion: reduce) {
+  .error-item {
+    animation: none;
+  }
 }
 
 /* --- RESPONSIVE PARA DIFERENTES TAMAÑOS --- */
@@ -399,31 +269,6 @@ body {
     margin: -16px -16px 20px -16px;
   }
 }
-/* --- SELECTOR DE IDIOMA --- */
-.campo-idioma {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  font-size: 12px;
-  color: #6b7280;
-}
-.campo-idioma select {
-  flex: 1;
-  padding: 6px 8px;
-  font: inherit;
-  font-size: 12px;
-  color: #111827;
-  background: #fff;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.campo-idioma select:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 1px;
-}
-
 /* --- PASTILLAS DE CONTEO Y FILTRO --- */
 /* Hacen de leyenda de colores y de filtro a la vez. */
 .filtros {
@@ -442,15 +287,14 @@ body {
   font: inherit;
   font-size: 11px;
   font-weight: 500;
-  color: #4b5563;
-  background: #f3f4f6;
+  color: var(--text-secondary);
+  background: var(--secondary-color);
   border: 1px solid transparent;
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
-.filtro:hover { background: #e5e7eb; }
-.filtro:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; }
+.filtro:hover { background: var(--secondary-hover); }
 
 .filtro-numero {
   font-variant-numeric: tabular-nums;
@@ -467,15 +311,15 @@ body {
   height: 7px;
   border-radius: 50%;
 }
-.filtro.categoria-typo::before      { background: #ef4444; }
-.filtro.categoria-gramatica::before { background: #3b82f6; }
-.filtro.categoria-estilo::before    { background: #f59e0b; }
-.filtro.categoria-otro::before      { background: #9ca3af; }
+.filtro.categoria-typo::before      { background: var(--cat-typo); }
+.filtro.categoria-gramatica::before { background: var(--cat-gramatica); }
+.filtro.categoria-estilo::before    { background: var(--cat-estilo); }
+.filtro.categoria-otro::before      { background: var(--cat-otro); }
 
 .filtro.activo {
-  color: #111827;
-  background: #fff;
-  border-color: #9ca3af;
+  color: var(--text-primary);
+  background: var(--surface);
+  border-color: var(--text-muted);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
@@ -490,7 +334,6 @@ button.error-item {
   cursor: pointer;
 }
 button.error-item:focus-visible {
-  outline: 2px solid #2563eb;
   outline-offset: -2px;
 }
 
@@ -501,8 +344,8 @@ button.error-item:focus-visible {
   font-size: 10px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: #374151;
-  background: #e5e7eb;
+  color: var(--text-primary);
+  background: var(--secondary-hover);
   border-radius: 999px;
 }
 .repeticiones::before { content: '\00d7'; }
@@ -512,29 +355,11 @@ button.error-item:focus-visible {
   content: attr(data-posicion);
   float: right;
   font-size: 10px;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
 .ignorar-btn { cursor: pointer; }
-.ignorar-btn:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; }
-
-/* --- BOTON DE ICONO EN LA CABECERA --- */
-.icono-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  padding: 6px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.18);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.icono-btn:hover { background: rgba(255, 255, 255, 0.32); }
-.icono-btn:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
 
 /* --- BARRA DE DESHACER --- */
 .deshacer {
@@ -544,9 +369,9 @@ button.error-item:focus-visible {
   margin: 8px 0;
   padding: 8px 10px;
   font-size: 12px;
-  color: #1f2937;
-  background: #fef3c7;
-  border: 1px solid #fcd34d;
+  color: var(--aviso-texto);
+  background: var(--aviso-fondo);
+  border: 1px solid var(--aviso-borde);
   border-radius: 8px;
 }
 .deshacer[hidden] { display: none; }
@@ -555,14 +380,13 @@ button.error-item:focus-visible {
   font: inherit;
   font-size: 12px;
   font-weight: 700;
-  color: #92400e;
+  color: var(--aviso-accion);
   background: none;
   border: none;
   padding: 2px 4px;
   cursor: pointer;
   text-decoration: underline;
 }
-.deshacer button:focus-visible { outline: 2px solid #92400e; outline-offset: 1px; }
 
 /* --- BOTON COPIAR CORRECCION --- */
 .copiar-btn {
@@ -570,12 +394,249 @@ button.error-item:focus-visible {
   padding: 2px 8px;
   font-size: 10px;
   font-weight: 600;
-  color: #374151;
-  background: #e5e7eb;
+  color: var(--text-primary);
+  background: var(--secondary-hover);
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.15s;
 }
-.copiar-btn:hover { background: #d1d5db; }
-.copiar-btn:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; }
-.copiar-btn.copiado { color: #065f46; background: #a7f3d0; }
+.copiar-btn:hover { background: var(--border-color); }
+.copiar-btn.copiado { color: var(--exito-texto); background: var(--exito-fondo); }
+
+/* --- PIE CON EL IDIOMA ACTIVO --- */
+/* Mismo tono que el mensaje de estado, dos puntos mas pequeño: debe poder
+   consultarse, no competir con la lista de errores. */
+.idioma-activo {
+  margin-top: 10px;
+  padding-right: 2px;
+  text-align: right;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+.idioma-activo:empty { display: none; }
+
+/* --- CARRIL DE VISTAS --- */
+/* Dos paneles en fila que se desplazan como en una aplicación móvil.
+   El contenedor recorta lo que sobresale y fija el alto: si cada vista midiera
+   lo suyo, la ventana del popup se redimensionaría a mitad de la animación. */
+.carril-marco {
+  overflow: hidden;
+}
+
+.carril {
+  display: flex;
+  align-items: flex-start;
+  width: 200%;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carril[data-vista='config'] {
+  transform: translateX(-50%);
+}
+
+.vista {
+  width: 50%;
+  flex: 0 0 50%;
+  /* Altura fija: Chrome ajusta la ventana del popup al contenido, asi que sin
+     esto la ventana se redimensionaba al pasar de un estado a otro y al
+     deslizar entre vistas. Un unico numero gobierna el alto del panel. */
+  height: var(--alto-vista);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+#vistaConfig {
+  /* Si la configuracion no cabe, se desplaza por dentro en vez de estirar
+     la ventana. */
+  overflow-y: auto;
+}
+
+/* La vista oculta no debe poder recibir el foco al tabular. El atributo inert
+   ya lo impide; esto cubre navegadores que aún no lo soportan. */
+.vista[inert] {
+  visibility: hidden;
+}
+
+/* Quien tiene las animaciones desactivadas recibe un cambio directo. */
+@media (prefers-reduced-motion: reduce) {
+  .carril {
+    transition: none;
+  }
+}
+
+/* --- SUBCABECERA DE LA CONFIGURACIÓN --- */
+.subcabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.subcabecera h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Variante del botón de icono fuera de la cabecera de color. */
+.icono-btn-claro {
+  margin-left: 0;
+  color: var(--text-secondary);
+  background: var(--secondary-color);
+}
+
+.icono-btn-claro:hover {
+  color: var(--text-primary);
+  background: var(--secondary-hover);
+}
+
+.icono-btn-claro:focus-visible {
+  outline-color: var(--primary-color);
+}
+
+/* --- BARRA DE PROGRESO DE LA REVISIÓN --- */
+.progreso {
+  position: relative;
+  height: 4px;
+  margin: 0 0 12px;
+  overflow: hidden;
+  background: var(--secondary-color);
+  border-radius: 999px;
+}
+
+.progreso[hidden] {
+  display: none;
+}
+
+.progreso-barra {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+  border-radius: inherit;
+  transition: width 0.25s ease-out;
+}
+
+/* Entre que arranca la revisión y termina el primer lote no se sabe cuántos
+   hay; una barra parada en cero parecería que no avanza. */
+.progreso.indeterminado .progreso-barra {
+  width: 40%;
+  animation: progreso-vaiven 1.1s ease-in-out infinite;
+}
+
+@keyframes progreso-vaiven {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+/* Sin animación, la barra indeterminada se queda quieta a la izquierda en vez
+   de latir: sigue comunicando "en marcha" sin movimiento continuo. */
+@media (prefers-reduced-motion: reduce) {
+  .progreso.indeterminado .progreso-barra {
+    animation: none;
+    width: 100%;
+    opacity: 0.4;
+  }
+  .progreso-barra {
+    transition: none;
+  }
+}
+
+/* --- ESTADOS SIN LISTA DE ERRORES --- */
+/* Antes todos compartían una caja de texto gris: "aún no has revisado" y
+   "no hay errores" son mensajes opuestos y se leían igual. */
+.estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  text-align: center;
+}
+
+.estado svg {
+  margin-bottom: 2px;
+  color: var(--text-muted);
+}
+
+.estado-titulo {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.estado-detalle {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 260px;
+}
+
+.estado-exito svg {
+  color: var(--success-color);
+}
+
+.estado-aviso svg {
+  color: var(--warning-color);
+}
+
+.estado-inicial svg {
+  color: var(--primary-color);
+}
+
+/* --- AJUSTES DE LA CONFIGURACIÓN DENTRO DEL PANEL --- */
+/* En el panel la configuración no cabe de una vez, así que se desplaza. Pero
+   la acción principal no puede quedar bajo el pliegue: la barra de guardado
+   se ancla al fondo mientras el contenido corre por detrás. */
+#vistaConfig .barra {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin-top: auto;
+  padding: 10px 0 2px;
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* El panel es estrecho: se recorta el aire sin tocar la página independiente. */
+#vistaConfig .divider {
+  margin: 14px 0;
+}
+
+#vistaConfig .ayuda {
+  margin-bottom: 10px;
+}
+
+#vistaConfig .campo-chips {
+  min-height: 104px;
+}
+
+/* --- ESPACIADO VERTICAL DE LA VISTA PRINCIPAL --- */
+/* La vista es una columna flexible, y ahí los márgenes de hermanos NO se
+   colapsan: se suman. Con los valores pensados para un flujo en bloque, entre
+   el botón de exportar y los resultados se acumulaban 86 px. */
+#vistaPrincipal .actions {
+  margin-bottom: 12px;
+}
+
+#vistaPrincipal #accionesExportar {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+#vistaPrincipal .divider {
+  margin: 0 0 14px;
+}
+
+#vistaPrincipal .filtros {
+  margin: 0 0 4px;
+}
+
+#vistaPrincipal .error-list {
+  margin-top: 10px;
+}
