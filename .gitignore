@@ -7,3 +7,5 @@ ver-icono.html
 __pycache__/
 *.pyc
 demo-options.html
+*.zip
+escenas.html
